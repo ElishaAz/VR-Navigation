@@ -21,6 +21,10 @@ namespace Map
         [SerializeField] [Tooltip("A prefab of an end Arrow.")]
         private MapArrow endArrowPrefab;
 
+        [SerializeField] [Range(1, 100)] private float actionsPerSecond = 10;
+
+        private InvokeLater invokeLater;
+
         /// <summary>
         /// Defines the possible types of cache for the images.
         /// </summary>
@@ -74,6 +78,9 @@ namespace Map
         {
             instance = this;
             resourceManager = new MapResourceManager(Application.persistentDataPath);
+
+            invokeLater = new InvokeLater(actionsPerSecond);
+            StartCoroutine(invokeLater.MainCoroutine());
         }
 
         /// <summary>
@@ -117,7 +124,8 @@ namespace Map
                 if (imageCache == ImageCacheType.PreloadCurrent && a.node != node)
                 {
                     // free the resources after a few frames to prevent lagging.
-                    StartCoroutine(InvokeLater(() => resourceManager.FreeNodeResources(a.node)));
+                    // StartCoroutine(invokeLater.AddNextFrame(() => resourceManager.FreeNodeResources(a.node)));
+                    resourceManager.FreeNodeResources(a.node);
                 }
 
                 Destroy(a.gameObject);
@@ -153,26 +161,26 @@ namespace Map
             if (imageCache == ImageCacheType.PreloadCurrent)
             {
                 // load the resources after a few frames to prevent lagging.
-                StartCoroutine(InvokeLater(() => resourceManager.LoadNodeResources(node), 2));
+                StartCoroutine(invokeLater.AddNextFrame(() => resourceManager.LoadNodeResources(node)));
             }
         }
 
-        /// <summary>
-        /// A coroutine that invokes the given action after a given number of frames.
-        /// </summary>
-        /// <param name="action">The action to invoke.</param>
-        /// <param name="frames">The number of frames to wait before invoking the action.</param>
-        private IEnumerator InvokeLater(Action action, int frames = 1)
-        {
-            // while there are frames left
-            while (frames > 0)
-            {
-                // wait for a frame
-                yield return null;
-                frames--;
-            }
-
-            action();
-        }
+        // /// <summary>
+        // /// A coroutine that invokes the given action after a given number of frames.
+        // /// </summary>
+        // /// <param name="action">The action to invoke.</param>
+        // /// <param name="frames">The number of frames to wait before invoking the action.</param>
+        // private IEnumerator InvokeLater(Action action, int frames = 1)
+        // {
+        //     // while there are frames left
+        //     while (frames > 0)
+        //     {
+        //         // wait for a frame
+        //         yield return null;
+        //         frames--;
+        //     }
+        //
+        //     action();
+        // }
     }
 }

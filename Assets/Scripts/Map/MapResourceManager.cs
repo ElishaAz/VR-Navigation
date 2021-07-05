@@ -83,6 +83,8 @@ namespace Map
         /// <param name="node">The node.</param>
         internal void LoadNodeResources(MapNode node)
         {
+            Debug.Log($@"Loading {node} resources");
+
             // if the image is already loaded
             if (images.ContainsKey(node))
             {
@@ -102,6 +104,12 @@ namespace Map
         /// <param name="node">The node.</param>
         internal void FreeNodeResources(MapNode node)
         {
+            if (!images.ContainsKey(node))
+            {
+                Debug.LogError($@"Node {node} is being freed before loading.");
+                return;
+            }
+
             // decrease the pointer counter.
             images[node].pointerCounter--;
 

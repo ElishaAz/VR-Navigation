@@ -54,8 +54,7 @@ public class CameraPointer : MonoBehaviour
             gazeClickIndicator.fillAmount = gazeTime - timeToClick;
         }
 
-        // Casts ray towards camera's forward direction, to detect if a GameObject is being gazed
-        // at.
+        // Casts ray towards camera's forward direction, to detect if a GameObject is being gazed at.
         if (Physics.Raycast(transform.position, transform.forward, out var hit, maxDistance))
         {
             // GameObject detected in front of the camera.
@@ -76,6 +75,9 @@ public class CameraPointer : MonoBehaviour
             if (_gazedAtObject != null)
                 _gazedAtObject.SendMessage("OnPointerExit");
             _gazedAtObject = null;
+
+            timeToClick = 0;
+            gazeClickIndicator.enabled = false;
         }
 
         // Checks for screen touches.
@@ -91,5 +93,7 @@ public class CameraPointer : MonoBehaviour
             _gazedAtObject.SendMessage("OnPointerClick");
         timeToClick = 0;
         gazeClickIndicator.enabled = false;
+
+        Debug.Log("Clicked");
     }
 }
