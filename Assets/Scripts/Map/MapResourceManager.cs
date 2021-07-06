@@ -1,6 +1,8 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace Map
 {
@@ -59,7 +61,11 @@ namespace Map
         {
             // if the image is not in cache, add it
             if (!images.ContainsKey(node))
-                LoadNodeResources(node);
+            {
+                // load resources synchronously
+                var tex = IOTools.LoadImage(resourceLocationRoot + Path.DirectorySeparatorChar + node.Path);
+                images.Add(node, new Resource(tex, 1));
+            }
 
             // return from cache.
             return images[node].tex;
@@ -69,11 +75,11 @@ namespace Map
         /// Loads the resources for an entire map.
         /// </summary>
         /// <param name="graph">The map graph.</param>
-        internal void LoadAllResources(MapGraph graph)
+        internal IEnumerator LoadAllResources(MapGraph graph)
         {
             foreach (var node in graph.GetAllNodes)
             {
-                LoadNodeResources(node);
+                yield return LoadNodeResources(node);
             }
         }
 
@@ -81,7 +87,7 @@ namespace Map
         /// Loads the resources for a node.
         /// </summary>
         /// <param name="node">The node.</param>
-        internal void LoadNodeResources(MapNode node)
+        internal IEnumerator LoadNodeResources(MapNode node)
         {
             Debug.Log($@"Loading {node} resources");
 
@@ -90,23 +96,51 @@ namespace Map
             {
                 // increase the pointer counter.
                 images[node].pointerCounter++;
-                return;
+                yield break;
             }
 
-            // otherwise - load it
-            var tex = IOTools.LoadImage(resourceLocationRoot + Path.DirectorySeparatorChar + node.Path);
-            images.Add(node, new Resource(tex, 1));
+            var path = "file://" + resourceLocationRoot + Path.DirectorySeparatorChar + node.Path;
+
+            using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path))
+            {
+                yield return uwr.SendWebRequest();
+
+                if (uwr.result == UnityWebRequest.Result.ConnectionError)
+                {
+                    Debug.Log(uwr.error);
+                }
+                else
+                {
+                    // if the image was already loaded in the meantime
+                    if (images.ContainsKey(node))
+                    {
+                        yield break;
+                    }
+
+                    images.Add(node, new Resource(DownloadHandlerTexture.GetContent(uwr), 1));
+                }
+            }
+
+
+            // // otherwise - load it
+            // var tex = IOTools.LoadImage(resourceLocationRoot + Path.DirectorySeparatorChar + node.Path);
+            // images.Add(node, new Resource(tex, 1));
         }
 
         /// <summary>
         /// Free the resources of a node to save RAM.
         /// </summary>
         /// <param name="node">The node.</param>
-        internal void FreeNodeResources(MapNode node)
+        /// <param name="ignoreNonExisting"></param>
+        internal void FreeNodeResources(MapNode node, bool ignoreNonExisting = false)
         {
             if (!images.ContainsKey(node))
             {
-                Debug.LogError($@"Node {node} is being freed before loading.");
+                if (!ignoreNonExisting)
+                {
+                    Debug.LogError($@"Node {node} is being freed before loading.");
+                }
+
                 return;
             }
 

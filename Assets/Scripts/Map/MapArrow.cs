@@ -23,6 +23,7 @@ namespace Map
         [SerializeField] [Tooltip("Set this to true to trigger the transportation.")]
         private bool trigger;
 
+
         private void Update()
         {
             if (trigger)
@@ -33,14 +34,19 @@ namespace Map
         }
 #endif
 
+        private MapResourceManager resourceManager = null;
+        private bool resourceLoaded = true;
+
         /// <summary>
         /// Set up this arrow with a map node.
         /// </summary>
         /// <param name="node">The target node.</param>
         /// <param name="edgeAzimuth">The azimuth between the source (current) node to the target node.</param>
-        public void SetUp(MapNode node, float edgeAzimuth)
+        public void SetUp(MapNode node, float edgeAzimuth, MapResourceManager resourceManager)
         {
             this.node = node;
+            this.resourceManager = resourceManager;
+            resourceLoaded = false;
             // StartCoroutine(node.LoadTexture());
 
             /* Code copied from old MapBuilder */
@@ -60,6 +66,16 @@ namespace Map
         private void OnPointerClick()
         {
             MapManager.instance.LoadNode(node);
+        }
+
+        private void OnPointerEnter()
+        {
+            if (resourceManager != null && !resourceLoaded)
+            {
+                resourceLoaded = false;
+
+                StartCoroutine(resourceManager.LoadNodeResources(node));
+            }
         }
     }
 }

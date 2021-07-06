@@ -160,7 +160,7 @@ MonoBehaviour:
   endArrowPrefab: {fileID: 7343702685329640968, guid: 3a695f396b2920c449f524448518e645,
     type: 3}
   actionsPerSecond: 10
-  imageCache: 1
+  imageCache: 2
 --- !u!4 &190879866
 Transform:
   m_ObjectHideFlags: 0

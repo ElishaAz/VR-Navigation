@@ -41,6 +41,16 @@ namespace Map
             PreloadCurrent,
 
             /// <summary>
+            /// Load the resources for the arrow that is currently gazed at and free them when the node is too far away.
+            /// </summary>
+            LoadOnHover,
+
+            /// <summary>
+            /// Load the resources for the arrow that is currently gazed and do not free them.
+            /// </summary>
+            LoadOnHoverKeep,
+
+            /// <summary>
             /// Load resources on demand and keep them.
             /// </summary>
             OnDemandCache,
@@ -98,9 +108,9 @@ namespace Map
 
             // load resources if needed
             if (imageCache == ImageCacheType.LoadOnStart)
-                resourceManager.LoadAllResources(this.graph);
+                StartCoroutine(resourceManager.LoadAllResources(this.graph));
             if (imageCache == ImageCacheType.PreloadCurrent)
-                resourceManager.LoadNodeResources(graph.StartPoint);
+                StartCoroutine(resourceManager.LoadNodeResources(graph.StartPoint));
 
             // load the initial node
             LoadNode(graph.StartPoint);
@@ -121,11 +131,12 @@ namespace Map
             // destroy old arrows
             foreach (var a in arrows)
             {
-                if (imageCache == ImageCacheType.PreloadCurrent && a.node != node)
+                if ((imageCache == ImageCacheType.PreloadCurrent || imageCache == ImageCacheType.LoadOnHover) &&
+                    a.node != node)
                 {
                     // free the resources after a few frames to prevent lagging.
                     // StartCoroutine(invokeLater.AddNextFrame(() => resourceManager.FreeNodeResources(a.node)));
-                    resourceManager.FreeNodeResources(a.node);
+                    resourceManager.FreeNodeResources(a.node, imageCache == ImageCacheType.LoadOnHover);
                 }
 
                 Destroy(a.gameObject);
@@ -154,14 +165,20 @@ namespace Map
             // create arrow
             MapNode node = graph.NodeOf(edge);
             MapArrow arrow = Instantiate(graph.IsEndPoint(node) ? endArrowPrefab : arrowPrefab);
-            arrow.SetUp(node, edge.Azimuth);
+
+            if (imageCache == ImageCacheType.LoadOnHover || imageCache == ImageCacheType.LoadOnHoverKeep)
+                arrow.SetUp(node, edge.Azimuth, resourceManager);
+            else
+                arrow.SetUp(node, edge.Azimuth, null);
+
             arrows.Add(arrow);
 
             // load resources if needed.
             if (imageCache == ImageCacheType.PreloadCurrent)
             {
                 // load the resources after a few frames to prevent lagging.
-                StartCoroutine(invokeLater.AddNextFrame(() => resourceManager.LoadNodeResources(node)));
+                StartCoroutine(invokeLater.AddNextFrame(() =>
+                    StartCoroutine(resourceManager.LoadNodeResources(node))));
             }
         }
 
