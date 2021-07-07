@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Networking;
+using VRNavigation.MapData;
 
 namespace Map
 {
     /// <summary>
     /// The resource manager for a map.
     /// </summary>
-    public class MapResourceManager : IResourceManager
+    public class MapResourceManager
     {
         /// <summary>
         /// The root folder for this map's resources.
@@ -63,24 +64,12 @@ namespace Map
             if (!images.ContainsKey(node))
             {
                 // load resources synchronously
-                var tex = IOTools.LoadImage(resourceLocationRoot + Path.DirectorySeparatorChar + node.Path);
+                var tex = IOTools.LoadImage(resourceLocationRoot + Path.DirectorySeparatorChar + node.path);
                 images.Add(node, new Resource(tex, 1));
             }
 
             // return from cache.
             return images[node].tex;
-        }
-
-        /// <summary>
-        /// Loads the resources for an entire map.
-        /// </summary>
-        /// <param name="graph">The map graph.</param>
-        internal IEnumerator LoadAllResources(MapGraph graph)
-        {
-            foreach (var node in graph.GetAllNodes)
-            {
-                yield return LoadNodeResources(node);
-            }
         }
 
         /// <summary>
@@ -99,7 +88,7 @@ namespace Map
                 yield break;
             }
 
-            var path = "file://" + resourceLocationRoot + Path.DirectorySeparatorChar + node.Path;
+            var path = "file://" + resourceLocationRoot + Path.DirectorySeparatorChar + node.path;
 
             using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path))
             {

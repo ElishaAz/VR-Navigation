@@ -72,12 +72,12 @@ namespace Map
         /// <summary>
         /// The map graph.
         /// </summary>
-        private MapGraph graph;
+        private MapGraphWrapped graph;
 
         /// <summary>
         /// The last (current) that was loaded.
         /// </summary>
-        private MapNode lastNode;
+        private MapNodeWrapper lastNode;
 
         /// <summary>
         /// A list of the currently existing arrows.
@@ -87,7 +87,6 @@ namespace Map
         private void Awake()
         {
             instance = this;
-            resourceManager = new MapResourceManager(Application.persistentDataPath);
 
             invokeLater = new InvokeLater(actionsPerSecond);
             StartCoroutine(invokeLater.MainCoroutine());
@@ -97,9 +96,11 @@ namespace Map
         /// Initialize the Map.
         /// </summary>
         /// <param name="graph">The Map Graph to initialize to.</param>
-        public void Init(MapGraph graph)
+        /// <param name="resourceLocationRoot">The path to the root of the resources.</param>
+        public void Init(MapGraphWrapped graph, string resourceLocationRoot)
         {
             // assign the variables
+            resourceManager = new MapResourceManager(resourceLocationRoot);
             this.graph = graph;
             this.graph.resourceManager = resourceManager;
 
@@ -108,25 +109,29 @@ namespace Map
 
             // load resources if needed
             if (imageCache == ImageCacheType.LoadOnStart)
-                StartCoroutine(resourceManager.LoadAllResources(this.graph));
+            {
+            }
+
+            var startPoint = graph.StartPoint;
+
             if (imageCache == ImageCacheType.PreloadCurrent)
-                StartCoroutine(resourceManager.LoadNodeResources(graph.StartPoint));
+                StartCoroutine(startPoint.LoadResources());
 
             // load the initial node
-            LoadNode(graph.StartPoint);
+            LoadNode(startPoint);
         }
 
         /// <summary>
         /// Load a node from the map.
         /// </summary>
         /// <param name="node">The node to load.</param>
-        public void LoadNode(MapNode node)
+        public void LoadNode(MapNodeWrapper node)
         {
             Debug.Log("Loading Node: " + node);
 
             // if the cache mode is set to no cache, we need to free the previous node's resources.
             if (imageCache == ImageCacheType.NoCache && lastNode != default) // TODO: rewrite properly
-                resourceManager.FreeNodeResources(lastNode);
+                lastNode.FreeResources();
 
             // destroy old arrows
             foreach (var a in arrows)
@@ -136,7 +141,7 @@ namespace Map
                 {
                     // free the resources after a few frames to prevent lagging.
                     // StartCoroutine(invokeLater.AddNextFrame(() => resourceManager.FreeNodeResources(a.node)));
-                    resourceManager.FreeNodeResources(a.node, imageCache == ImageCacheType.LoadOnHover);
+                    node.FreeResources(imageCache == ImageCacheType.LoadOnHover);
                 }
 
                 Destroy(a.gameObject);
@@ -160,10 +165,10 @@ namespace Map
         /// Create a new Arrow.
         /// </summary>
         /// <param name="edge">The edge the new arrow should represent.</param>
-        private void CreateArrow(MapEdge edge)
+        private void CreateArrow(MapEdgeWrapper edge)
         {
             // create arrow
-            MapNode node = graph.NodeOf(edge);
+            MapNodeWrapper node = graph.NodeOf(edge);
             MapArrow arrow = Instantiate(graph.IsEndPoint(node) ? endArrowPrefab : arrowPrefab);
 
             if (imageCache == ImageCacheType.LoadOnHover || imageCache == ImageCacheType.LoadOnHoverKeep)
@@ -178,7 +183,7 @@ namespace Map
             {
                 // load the resources after a few frames to prevent lagging.
                 StartCoroutine(invokeLater.AddNextFrame(() =>
-                    StartCoroutine(resourceManager.LoadNodeResources(node))));
+                    StartCoroutine(node.LoadResources())));
             }
         }
 

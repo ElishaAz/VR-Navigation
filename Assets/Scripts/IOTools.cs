@@ -5,6 +5,7 @@ using Logic;
 using Map;
 using Newtonsoft.Json;
 using UnityEngine;
+using VRNavigation.MapData;
 
 /// <summary>
 /// A collection of file input and output tools.

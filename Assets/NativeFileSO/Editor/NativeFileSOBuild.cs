@@ -222,7 +222,7 @@ public class NativeFileSOBuild
 
     private static string GetIntentForCustomFileType(SupportedFileType fileType)
     {
-        return GetIntentForFileBrowser(fileType.MimeType);
+        // return GetIntentForFileBrowser(fileType.MimeType);
 
         //return string.Format(@"
         //	<intent-filter>
@@ -237,5 +237,76 @@ public class NativeFileSOBuild
 
         //	</intent-filter>"    
         //, fileType.MimeType, fileType.Extension);
+
+
+        return string.Format(
+            @"
+            <intent-filter>
+                <action android:name=""android.intent.action.VIEW"" />
+
+                <category android:name=""android.intent.category.BROWSABLE"" />
+                <category android:name=""android.intent.category.DEFAULT"" />
+
+                <data android:scheme=""content"" />
+                <data android:host=""*"" />
+                <data android:mimeType=""application/octet-stream"" />
+
+                <data android:pathPattern="".*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name=""android.intent.action.VIEW"" />
+
+                <category android:name=""android.intent.category.BROWSABLE"" />
+                <category android:name=""android.intent.category.DEFAULT"" />
+
+                <data android:scheme=""file"" />
+                <data android:scheme=""content"" />
+                <data android:mimeType=""{1}"" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name=""android.intent.action.VIEW"" />
+
+                <category android:name=""android.intent.category.BROWSABLE"" />
+                <category android:name=""android.intent.category.DEFAULT"" />
+
+                <data android:scheme=""file"" />
+                <data android:host=""*"" />
+
+                <data android:pathPattern="".*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name=""android.intent.action.VIEW"" />
+
+                <category android:name=""android.intent.category.BROWSABLE"" />
+                <category android:name=""android.intent.category.DEFAULT"" />
+
+                <data android:scheme=""file"" />
+                <data android:host=""*"" />
+                <data android:mimeType=""*/*"" />
+
+                <data android:pathPattern="".*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
+                <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
+            </intent-filter>"
+            , fileType.Extension, fileType.MimeType);
     }
 }

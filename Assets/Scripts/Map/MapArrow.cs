@@ -11,7 +11,7 @@ namespace Map
         /// <summary>
         /// The target node this arrow will transport to.
         /// </summary>
-        internal MapNode node;
+        internal MapNodeWrapper node;
 
         [SerializeField] [Tooltip("The height of the arrow.")]
         private float height = 0;
@@ -42,7 +42,7 @@ namespace Map
         /// </summary>
         /// <param name="node">The target node.</param>
         /// <param name="edgeAzimuth">The azimuth between the source (current) node to the target node.</param>
-        public void SetUp(MapNode node, float edgeAzimuth, MapResourceManager resourceManager)
+        public void SetUp(MapNodeWrapper node, float edgeAzimuth, MapResourceManager resourceManager)
         {
             this.node = node;
             this.resourceManager = resourceManager;
@@ -61,20 +61,23 @@ namespace Map
         }
 
         /// <summary>
-        /// Called when this Arrow is gazed at.
+        /// Called when this Arrow is gazed at for a fixed time.
         /// </summary>
         private void OnPointerClick()
         {
             MapManager.instance.LoadNode(node);
         }
 
+        /// <summary>
+        /// Called when the arrow starts being gazed at.
+        /// </summary>
         private void OnPointerEnter()
         {
             if (resourceManager != null && !resourceLoaded)
             {
                 resourceLoaded = false;
 
-                StartCoroutine(resourceManager.LoadNodeResources(node));
+                StartCoroutine(node.LoadResources());
             }
         }
     }
