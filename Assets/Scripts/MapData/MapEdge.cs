@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace VRNavigation.MapData
 {
@@ -6,7 +7,7 @@ namespace VRNavigation.MapData
     /// An edge in the map, representing a path from one location to another (not bidirectional).
     /// </summary>
     [DataContract]
-    public struct MapEdge
+    public readonly struct MapEdge
     {
         /// <summary>
         /// The destination node's id.
@@ -23,6 +24,7 @@ namespace VRNavigation.MapData
         /// </summary>
         /// <param name="node">The destination node's id.</param>
         /// <param name="azimuth">The azimuth between the source node and the destination node.</param>
+        [JsonConstructor]
         public MapEdge(int node, float azimuth)
         {
             this.node = node;

@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace VRNavigation.MapData
 {
@@ -9,7 +10,7 @@ namespace VRNavigation.MapData
     /// A node in the map, representing a singe location.
     /// </summary>
     [DataContract]
-    public struct MapNode
+    public readonly struct MapNode
     {
         /// <summary>
         /// The path (relative to the resource location) of the image file of this node.
@@ -22,6 +23,7 @@ namespace VRNavigation.MapData
         /// Create a node.
         /// </summary>
         /// <param name="path">The path (relative to the resource location) of the image file of this node.</param>
+        [JsonConstructor]
         public MapNode(string path)
         {
             this.path = path;

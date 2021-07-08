@@ -87,6 +87,9 @@ public class CameraPointer : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Click the camera pointer (gaze).
+    /// </summary>
     private void Click()
     {
         if (_gazedAtObject != null)

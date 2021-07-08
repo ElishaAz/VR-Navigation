@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace VRNavigation.MapData
 {
@@ -44,6 +45,7 @@ namespace VRNavigation.MapData
         /// <param name="edges">The edges, as a (source node id, List[edge]) dictionary.</param>
         /// <param name="startPoint">The starting point.</param>
         /// <param name="endPoints">The ending points.</param>
+        [JsonConstructor]
         public MapGraph(string name, Dictionary<int, MapNode> nodes, Dictionary<int, MapEdge[]> edges,
             int startPoint, HashSet<int> endPoints)
         {

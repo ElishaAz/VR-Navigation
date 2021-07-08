@@ -64,7 +64,7 @@ namespace Map
             if (!images.ContainsKey(node))
             {
                 // load resources synchronously
-                var tex = IOTools.LoadImage(resourceLocationRoot + Path.DirectorySeparatorChar + node.path);
+                var tex = IOTools.LoadImage(Path.Combine(resourceLocationRoot, node.path));
                 images.Add(node, new Resource(tex, 1));
             }
 
@@ -88,7 +88,7 @@ namespace Map
                 yield break;
             }
 
-            var path = "file://" + resourceLocationRoot + Path.DirectorySeparatorChar + node.path;
+            var path = "file://" + Path.Combine(resourceLocationRoot, node.path);
 
             using (UnityWebRequest uwr = UnityWebRequestTexture.GetTexture(path))
             {

@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using Keiwando.NFSO;
 using Logic;
 using Map;
 using Newtonsoft.Json;
@@ -12,6 +14,8 @@ using VRNavigation.MapData;
 /// </summary>
 public class IOTools
 {
+    #region compat
+
     /// <summary>
     /// Reads an old JSON file.
     /// Copied from the old code.
@@ -40,22 +44,6 @@ public class IOTools
         {
             points.OptionalText = points.OptionalText.OrderBy(o => o.whenToDisplay).ToList();
         }
-    }
-
-    /// <summary>
-    /// Loads a texture from image file.
-    /// </summary>
-    /// <param name="path">The path to the image file.</param>
-    /// <returns>The image as a texture.</returns>
-    public static Texture2D LoadImage(string path)
-    {
-        var filePath = path;
-
-        /* Code copied from old MapBuilder */
-        Texture2D tex = new Texture2D(2, 2);
-        byte[] bytes = File.ReadAllBytes(filePath);
-        tex.LoadImage(bytes);
-        return tex;
     }
 
     /// <summary>
@@ -116,5 +104,139 @@ public class IOTools
     private static MapEdge NeighborToEdge(Neighbor neighbor)
     {
         return new MapEdge(neighbor.PointID, neighbor.Azimut);
+    }
+
+    #endregion
+
+    /// <summary>
+    /// Loads a texture from image file.
+    /// </summary>
+    /// <param name="path">The path to the image file.</param>
+    /// <returns>The image as a texture.</returns>
+    public static Texture2D LoadImage(string path)
+    {
+        var filePath = path;
+
+        /* Code copied from old MapBuilder */
+        Texture2D tex = new Texture2D(2, 2);
+        byte[] bytes = File.ReadAllBytes(filePath);
+        tex.LoadImage(bytes);
+        return tex;
+    }
+
+    /// <summary>
+    /// Save a map locally.
+    /// </summary>
+    /// <param name="mapsStorageLocation">The directory to store the map in.</param>
+    /// <param name="data">The zipped map as a byte array.</param>
+    /// <returns>A (map info, map location) pair.</returns>
+    public static KeyValuePair<MapInfo, string> ImportMap(string mapsStorageLocation, byte[] data)
+    {
+        var extractLocation = GlobalVars.MapExtractionLocation;
+        if (Directory.Exists(extractLocation))
+        {
+            Directory.Delete(extractLocation, true);
+        }
+
+        Directory.CreateDirectory(extractLocation);
+
+        using (MemoryStream mem = new MemoryStream(data))
+        using (ZipArchive archive = new ZipArchive(mem))
+        {
+            archive.ExtractToDirectory(extractLocation);
+
+            var info = ReadMapInfo(extractLocation);
+
+            if (!Directory.Exists(mapsStorageLocation))
+            {
+                Directory.CreateDirectory(mapsStorageLocation);
+            }
+
+            var mapLocation = GlobalVars.GetMapLocalLocation(info);
+
+            Directory.Move(extractLocation, mapLocation);
+            Debug.Log($"Imported {info.name}");
+            return new KeyValuePair<MapInfo, string>(info, mapLocation);
+        }
+    }
+
+    /// <summary>
+    /// Locates maps in a given directory according to directory structure.
+    /// </summary>
+    /// <param name="rootDirectory">The root directory to search.</param>
+    /// <returns>A list of paths to root directories of located maps.</returns>
+    public static Dictionary<MapInfo, string> LocateMaps(string rootDirectory = null)
+    {
+        rootDirectory ??= GlobalVars.LocalMapsLocation;
+
+        var maps = new Dictionary<MapInfo, string>();
+
+        if (!Directory.Exists(rootDirectory))
+        {
+            Directory.CreateDirectory(rootDirectory);
+            return maps;
+        }
+
+        foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
+        {
+            var hasMapConfig = false;
+            var hasMapInfo = false;
+
+            // check if it's a map
+            foreach (var file in Directory.EnumerateFiles(directory))
+            {
+                if (Path.GetFileName(file) == GlobalVars.MapConfigFile)
+                {
+                    hasMapConfig = true;
+                }
+
+                if (Path.GetFileName(file) == GlobalVars.MapInfoFile)
+                {
+                    hasMapInfo = true;
+                }
+            }
+
+            if (hasMapConfig && hasMapInfo)
+            {
+                var info = ReadMapInfo(directory);
+                maps.Add(info, directory);
+            }
+        }
+
+        return maps;
+    }
+
+    /// <summary>
+    /// Read a map's info from local storage.
+    /// </summary>
+    /// <param name="mapContentRoot"></param>
+    /// <returns></returns>
+    public static MapInfo ReadMapInfo(string mapContentRoot)
+    {
+        // read the file
+        var bytes = File.ReadAllBytes(Path.Combine(mapContentRoot, GlobalVars.MapInfoFile));
+        var str = System.Text.Encoding.Default.GetString(bytes);
+
+        // deserialize it
+        MapInfo info = JsonConvert.DeserializeObject<MapInfo>(str);
+
+        return info;
+    }
+
+    /// <summary>
+    /// Read a map from local storage.
+    /// </summary>
+    /// <param name="mapContentRoot">The root directory of the map.</param>
+    /// <returns>The map graph.</returns>
+    public static MapGraph ReadMap(string mapContentRoot)
+    {
+        // read the file
+        var bytes = File.ReadAllBytes(Path.Combine(mapContentRoot, GlobalVars.MapConfigFile));
+        var str = System.Text.Encoding.Default.GetString(bytes);
+
+        // deserialize it
+        MapGraph map = JsonConvert.DeserializeObject<MapGraph>(str);
+
+        return map;
     }
 }
