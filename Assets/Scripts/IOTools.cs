@@ -95,7 +95,25 @@ public class IOTools
     /// </summary>
     private static MapNode PointToNode(Point point)
     {
-        return new MapNode(point.Picture);
+        return new MapNode(point.Picture, OptionalTextsToMapNodeTexts(point.OptionalText));
+    }
+
+    private static MapNodeText[] OptionalTextsToMapNodeTexts(List<Optionaltext> optionaltexts)
+    {
+        MapNodeText[] texts = new MapNodeText[optionaltexts.Count];
+
+        for (int i = 0; i < optionaltexts.Count; i++)
+        {
+            texts[i] = OptionalTextToMapNodeText(optionaltexts[i]);
+        }
+
+        return texts;
+    }
+
+    private static MapNodeText OptionalTextToMapNodeText(Optionaltext optionaltext)
+    {
+        return new MapNodeText(optionaltext.text, optionaltext.whenToDisplay,
+            optionaltext.whenToDisplay + optionaltext.DurationInSeconds);
     }
 
     /// <summary>

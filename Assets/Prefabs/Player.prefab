@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1157834578236583237}
   - component: {fileID: 1157834578236583236}
   m_Layer: 0
-  m_Name: Canvas
+  m_Name: Gaze Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -347,7 +347,7 @@ GameObject:
   - component: {fileID: 4156727690227920849}
   - component: {fileID: 3386551850017608771}
   m_Layer: 0
-  m_Name: Image
+  m_Name: Recticle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

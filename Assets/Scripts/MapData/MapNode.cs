@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json;
@@ -17,16 +18,21 @@ namespace VRNavigation.MapData
         /// </summary>
         [DataMember] public readonly string path;
 
-        // TODO: optional text
+        /// <summary>
+        /// Some information about this node.
+        /// </summary>
+        [DataMember] public readonly MapNodeText[] texts;
 
         /// <summary>
         /// Create a node.
         /// </summary>
         /// <param name="path">The path (relative to the resource location) of the image file of this node.</param>
+        /// <param name="texts"></param>
         [JsonConstructor]
-        public MapNode(string path)
+        public MapNode(string path, MapNodeText[] texts)
         {
             this.path = path;
+            this.texts = texts;
         }
 
         /// <summary>
@@ -36,6 +42,7 @@ namespace VRNavigation.MapData
         public MapNode(MapNode other)
         {
             path = other.path;
+            texts = other.texts;
         }
 
         /// <summary>
