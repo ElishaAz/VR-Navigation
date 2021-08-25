@@ -209,7 +209,7 @@ namespace Keiwando.NFSO
             Name = "VR-Navigation file",
             Extension = "vrn",
             Owner = true,
-            MimeType = "application/vrn"
+            MimeType = "application/octet-stream"
         };
     }
 }

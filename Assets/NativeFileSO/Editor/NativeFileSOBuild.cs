@@ -268,7 +268,7 @@ public class NativeFileSOBuild
 
                 <data android:scheme=""file"" />
                 <data android:scheme=""content"" />
-                <data android:mimeType=""{1}"" />
+                <data android:mimeType=""application/{0}"" />
             </intent-filter>
 
             <intent-filter>
@@ -307,6 +307,6 @@ public class NativeFileSOBuild
                 <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
                 <data android:pathPattern="".*\\..*\\..*\\..*\\..*\\..*\\..*\\.{0}"" />
             </intent-filter>"
-            , fileType.Extension, fileType.MimeType);
+            , fileType.Extension);
     }
 }

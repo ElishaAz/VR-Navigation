@@ -147,8 +147,10 @@ public class IOTools
     /// </summary>
     /// <param name="mapsStorageLocation">The directory to store the map in.</param>
     /// <param name="data">The zipped map as a byte array.</param>
-    /// <returns>A (map info, map location) pair.</returns>
-    public static KeyValuePair<MapInfo, string> ImportMap(string mapsStorageLocation, byte[] data)
+    /// <param name="map">A (map info, map location) pair.</param>
+    /// <returns>True if the map was loaded successfully, false otherwise.</returns>
+    public static bool ImportMap(string mapsStorageLocation, byte[] data,
+        out KeyValuePair<MapInfo, string> map)
     {
         var extractLocation = GlobalVars.MapExtractionLocation;
         if (Directory.Exists(extractLocation))
@@ -158,24 +160,29 @@ public class IOTools
 
         Directory.CreateDirectory(extractLocation);
 
-        using (MemoryStream mem = new MemoryStream(data))
-        using (ZipArchive archive = new ZipArchive(mem))
+        using MemoryStream mem = new MemoryStream(data);
+        using ZipArchive archive = new ZipArchive(mem);
+        archive.ExtractToDirectory(extractLocation);
+
+        if (!CheckMapStructure(extractLocation))
         {
-            archive.ExtractToDirectory(extractLocation);
-
-            var info = ReadMapInfo(extractLocation);
-
-            if (!Directory.Exists(mapsStorageLocation))
-            {
-                Directory.CreateDirectory(mapsStorageLocation);
-            }
-
-            var mapLocation = GlobalVars.GetMapLocalLocation(info);
-
-            Directory.Move(extractLocation, mapLocation);
-            Debug.Log($"Imported {info.name}");
-            return new KeyValuePair<MapInfo, string>(info, mapLocation);
+            map = default;
+            return false;
         }
+
+        var info = ReadMapInfo(extractLocation);
+
+        if (!Directory.Exists(mapsStorageLocation))
+        {
+            Directory.CreateDirectory(mapsStorageLocation);
+        }
+
+        var mapLocation = GlobalVars.GetMapLocalLocation(info);
+
+        Directory.Move(extractLocation, mapLocation);
+        Debug.Log($"Imported {info.name}");
+        map = new KeyValuePair<MapInfo, string>(info, mapLocation);
+        return true;
     }
 
     /// <summary>
@@ -197,24 +204,7 @@ public class IOTools
 
         foreach (var directory in Directory.EnumerateDirectories(rootDirectory))
         {
-            var hasMapConfig = false;
-            var hasMapInfo = false;
-
-            // check if it's a map
-            foreach (var file in Directory.EnumerateFiles(directory))
-            {
-                if (Path.GetFileName(file) == GlobalVars.MapConfigFile)
-                {
-                    hasMapConfig = true;
-                }
-
-                if (Path.GetFileName(file) == GlobalVars.MapInfoFile)
-                {
-                    hasMapInfo = true;
-                }
-            }
-
-            if (hasMapConfig && hasMapInfo)
+            if (CheckMapStructure(directory))
             {
                 var info = ReadMapInfo(directory);
                 maps.Add(info, directory);
@@ -222,6 +212,30 @@ public class IOTools
         }
 
         return maps;
+    }
+
+    private static bool CheckMapStructure(string directory)
+    {
+        var hasMapConfig = false;
+        var hasMapInfo = false;
+
+        // check if it's a map
+        foreach (var file in Directory.EnumerateFiles(directory))
+        {
+            if (Path.GetFileName(file) == GlobalVars.MapConfigFile)
+            {
+                hasMapConfig = true;
+                if (hasMapInfo) return true;
+            }
+
+            if (Path.GetFileName(file) == GlobalVars.MapInfoFile)
+            {
+                hasMapInfo = true;
+                if (hasMapConfig) return true;
+            }
+        }
+
+        return false;
     }
 
     /// <summary>

@@ -10,6 +10,8 @@ public class MapPicker : MonoBehaviour
     [SerializeField] private MapButton buttonPrefab;
     [SerializeField] private LayoutGroup buttonGroup;
 
+    [SerializeField] private GameObject noMapsText;
+
     private void Awake()
     {
         CreateButtonGrid();
@@ -18,6 +20,7 @@ public class MapPicker : MonoBehaviour
 
     private void CreateButtonGrid()
     {
+        noMapsText.SetActive(true);
         var maps = Manager.Instance.Maps;
         foreach (var map in maps)
         {
@@ -27,8 +30,10 @@ public class MapPicker : MonoBehaviour
 
     private void CreateButton(MapInfo info)
     {
+        noMapsText.SetActive(false);
         var button = Instantiate(buttonPrefab, buttonGroup.transform, true);
         button.SetUp(info, OnClick(info));
+        Debug.Log("Added button");
     }
 
     private static UnityAction OnClick(MapInfo info)

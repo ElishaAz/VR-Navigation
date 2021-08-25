@@ -79,20 +79,34 @@ public class Manager : MonoBehaviour
         SceneManager.sceneLoaded += OnSceneWasLoaded;
 
         // locate maps
-        localMaps = IOTools.LocateMaps();
+        UpdateLocalMaps();
 
         NativeFileSOMobile.shared.FilesWereOpened += delegate(OpenedFile[] files)
         {
             foreach (var file in files)
             {
-                var map = IOTools.ImportMap(GlobalVars.LocalMapsLocation, file.Data);
-                onMapImported?.Invoke(map.Key);
+                ImportMapFile(file.Data);
                 break;
             }
 
             // update local maps
-            localMaps = IOTools.LocateMaps(GlobalVars.LocalMapsLocation);
+            UpdateLocalMaps();
         };
+    }
+
+    public void UpdateLocalMaps()
+    {
+        localMaps = IOTools.LocateMaps();
+    }
+
+    /// <summary>
+    /// Import a map file to local storage.
+    /// </summary>
+    /// <param name="data">The file as a byte array.</param>
+    public void ImportMapFile(byte[] data)
+    {
+        if (IOTools.ImportMap(GlobalVars.LocalMapsLocation, data, out var map))
+            onMapImported?.Invoke(map.Key);
     }
 
     /// <summary>

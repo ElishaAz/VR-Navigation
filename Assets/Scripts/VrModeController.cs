@@ -20,9 +20,7 @@ using System;
 using System.Collections;
 using Google.XR.Cardboard;
 using UnityEngine;
-using UnityEngine.XR;
 using UnityEngine.XR.Management;
-using XRSettings = UnityEngine.XR.XRSettings;
 
 /// <summary>
 /// Turns VR mode on and off.
