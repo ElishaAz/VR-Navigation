@@ -12,7 +12,12 @@ public class GlobalVars
     /// <summary>
     /// The path to temporary extraction location.
     /// </summary>
-    public static string MapExtractionLocation => Path.Combine(Application.persistentDataPath, "temp", "extracted");
+    public static string MapExtractionLocation => Path.Combine(Application.persistentDataPath, "Temp", "Extracted");
+
+    /// <summary>
+    /// The location for the log files.
+    /// </summary>
+    public static string LogLocation => Path.Combine(Application.persistentDataPath, "Logs");
 
     /// <summary>
     /// The map configuration file's name.

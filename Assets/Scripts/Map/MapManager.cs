@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Log;
 using UnityEngine;
 
 namespace Map
@@ -10,7 +11,7 @@ namespace Map
     /// </summary>
     public class MapManager : MonoBehaviour
     {
-        public static MapManager instance;
+        public static MapManager Instance { get; private set; }
 
         [SerializeField] [Tooltip("The sphere that will show the current node's image.")]
         private Renderer imageSphere;
@@ -24,6 +25,8 @@ namespace Map
         [SerializeField] [Range(1, 100)] private float actionsPerSecond = 10;
 
         private InvokeLater invokeLater;
+
+        private Action onNodeLoad;
 
         /// <summary>
         /// Defines the possible types of cache for the images.
@@ -75,7 +78,7 @@ namespace Map
         private MapGraphWrapped graph;
 
         /// <summary>
-        /// The last (current) that was loaded.
+        /// The last (current) node that was loaded.
         /// </summary>
         private MapNodeWrapper lastNode;
 
@@ -86,7 +89,7 @@ namespace Map
 
         private void Awake()
         {
-            instance = this;
+            Instance = this;
 
             invokeLater = new InvokeLater(actionsPerSecond);
             StartCoroutine(invokeLater.MainCoroutine());
@@ -159,6 +162,7 @@ namespace Map
             }
 
             lastNode = node;
+            onNodeLoad?.Invoke();
         }
 
         /// <summary>
@@ -187,22 +191,18 @@ namespace Map
             }
         }
 
-        // /// <summary>
-        // /// A coroutine that invokes the given action after a given number of frames.
-        // /// </summary>
-        // /// <param name="action">The action to invoke.</param>
-        // /// <param name="frames">The number of frames to wait before invoking the action.</param>
-        // private IEnumerator InvokeLater(Action action, int frames = 1)
-        // {
-        //     // while there are frames left
-        //     while (frames > 0)
-        //     {
-        //         // wait for a frame
-        //         yield return null;
-        //         frames--;
-        //     }
-        //
-        //     action();
-        // }
+        /// <summary>
+        /// The currently loaded node.
+        /// </summary>
+        public MapNodeWrapper CurrentNode => lastNode;
+
+        /// <summary>
+        /// Add an action to invoke on node load.
+        /// </summary>
+        /// <param name="action">The action to invoke.</param>
+        public void AddOnNodeLoad(Action action)
+        {
+            onNodeLoad += action;
+        }
     }
 }

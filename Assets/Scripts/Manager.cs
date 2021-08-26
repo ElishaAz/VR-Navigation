@@ -122,7 +122,7 @@ public class Manager : MonoBehaviour
 
         Debug.Log($"Loading map: {info}");
 
-        MapManager.instance.Init(graph, contentRoot);
+        MapManager.Instance.Init(graph, contentRoot);
     }
 
     /// <summary>

@@ -65,7 +65,7 @@ namespace Map
         /// </summary>
         private void OnPointerClick()
         {
-            MapManager.instance.LoadNode(node);
+            MapManager.Instance.LoadNode(node);
         }
 
         /// <summary>
