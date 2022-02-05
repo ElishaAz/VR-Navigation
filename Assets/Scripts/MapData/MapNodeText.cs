@@ -1,4 +1,5 @@
 using System.Runtime.Serialization;
+using Newtonsoft.Json;
 
 namespace VRNavigation.MapData
 {
@@ -26,6 +27,7 @@ namespace VRNavigation.MapData
         /// <param name="text">The text to display.</param>
         /// <param name="startTime">The time at which to start displaying the text.</param>
         /// <param name="endTime">The time at which to stop displaying the text.</param>
+        [JsonConstructor]
         public MapNodeText(string text, float startTime, float endTime)
         {
             this.text = text;

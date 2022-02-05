@@ -88,9 +88,16 @@ public class VrModeController : MonoBehaviour
     {
         if (_isVrModeEnabled)
         {
-            if (xrKeyControl && Api.IsCloseButtonPressed)
+            if (Api.IsCloseButtonPressed)
             {
-                ExitVR();
+                if (xrKeyControl)
+                {
+                    ExitVR();
+                }
+                else
+                {
+                    Manager.Instance.LoadPreviousScene();
+                }
             }
 
             if (Api.IsGearButtonPressed)

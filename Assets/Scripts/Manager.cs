@@ -32,6 +32,9 @@ public class Manager : MonoBehaviour
     [SerializeField] [Tooltip("The Map scene.")]
     private string mapScene;
 
+    [SerializeField] [Tooltip("The Menu scene.")]
+    private string menuScene;
+
     /// <summary>
     /// The map to load in the map scene.
     /// </summary>
@@ -57,6 +60,14 @@ public class Manager : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            LoadPreviousScene();
+        }
+    }
+
     /// <summary>
     /// Called after every Scene is loaded.
     /// </summary>
@@ -64,10 +75,13 @@ public class Manager : MonoBehaviour
     /// <param name="loadSceneMode"></param>
     private void OnSceneWasLoaded(Scene arg0, LoadSceneMode loadSceneMode)
     {
-        if (loadOnStart)
+        if (SceneManager.GetActiveScene().name == mapScene)
         {
-            LoadMap(mapInfoToLoad);
-            VrModeController.Instance.EnterVR();
+            if (loadOnStart)
+            {
+                LoadMap(mapInfoToLoad);
+                VrModeController.Instance.EnterVR();
+            }
         }
     }
 
@@ -134,6 +148,28 @@ public class Manager : MonoBehaviour
         mapInfoToLoad = mapInfo;
         loadOnStart = true;
         SceneManager.LoadScene(mapScene);
+    }
+
+    private void LoadMenu()
+    {
+        SceneManager.LoadScene(menuScene);
+    }
+
+    public void LoadPreviousScene()
+    {
+        if (SceneManager.GetActiveScene().name == mapScene)
+        {
+            VrModeController.Instance.ExitVR();
+            LoadMenu();
+        }
+        else
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#else
+            Application.Quit();
+#endif
+        }
     }
 
     /// <summary>
