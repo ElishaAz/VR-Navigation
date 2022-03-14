@@ -18,7 +18,6 @@
 
 using System;
 using System.Collections;
-using Google.XR.Cardboard;
 using UnityEngine;
 using UnityEngine.XR.Management;
 
@@ -75,9 +74,9 @@ public class VrModeController : MonoBehaviour
         // This is only required if the XR plugin is initialized on startup,
         // otherwise these API calls can be removed and just be used when the XR
         // plugin is started.
-        if (!Api.HasDeviceParams())
+        if (!Google.XR.Cardboard.Api.HasDeviceParams())
         {
-            Api.ScanDeviceParams();
+            Google.XR.Cardboard.Api.ScanDeviceParams();
         }
     }
 
@@ -88,7 +87,7 @@ public class VrModeController : MonoBehaviour
     {
         if (_isVrModeEnabled)
         {
-            if (Api.IsCloseButtonPressed)
+            if (Google.XR.Cardboard.Api.IsCloseButtonPressed)
             {
                 if (xrKeyControl)
                 {
@@ -100,12 +99,12 @@ public class VrModeController : MonoBehaviour
                 }
             }
 
-            if (Api.IsGearButtonPressed)
+            if (Google.XR.Cardboard.Api.IsGearButtonPressed)
             {
-                Api.ScanDeviceParams();
+                Google.XR.Cardboard.Api.ScanDeviceParams();
             }
 
-            Api.UpdateScreenParams();
+            Google.XR.Cardboard.Api.UpdateScreenParams();
         }
         else
         {
@@ -123,9 +122,9 @@ public class VrModeController : MonoBehaviour
     public void EnterVR()
     {
         StartCoroutine(StartXR());
-        if (Api.HasNewDeviceParams())
+        if (Google.XR.Cardboard.Api.HasNewDeviceParams())
         {
-            Api.ReloadDeviceParams();
+            Google.XR.Cardboard.Api.ReloadDeviceParams();
         }
     }
 

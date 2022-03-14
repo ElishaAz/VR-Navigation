@@ -16,9 +16,6 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
-using System;
-using System.Collections;
-using Google.XR.Cardboard;
 using UnityEngine;
 using UnityEngine.UI;
 
