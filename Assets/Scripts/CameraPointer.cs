@@ -16,7 +16,9 @@
 // </copyright>
 //-----------------------------------------------------------------------
 
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 /// <summary>
@@ -24,9 +26,11 @@ using UnityEngine.UI;
 /// </summary>
 public class CameraPointer : MonoBehaviour
 {
+    [SerializeField] private string uiTag;
     [SerializeField] private float gazeTime = 3;
+    [SerializeField] private float gazeTimeout = 0.5f;
 
-    [SerializeField] private float maxDistance = 10;
+    [SerializeField] private float maxDistance = 100;
     private GameObject _gazedAtObject = null;
 
     [SerializeField] private Image gazeClickIndicator;
@@ -53,11 +57,12 @@ public class CameraPointer : MonoBehaviour
         }
 
         // Casts ray towards camera's forward direction, to detect if a GameObject is being gazed at.
-        if (Physics.Raycast(transform.position, transform.forward, out var hit, maxDistance))
+        if (Physics.Raycast(transform.position,transform.forward, out var hit, maxDistance))
         {
             // GameObject detected in front of the camera.
-            if (_gazedAtObject != hit.transform.gameObject)
+            if (_gazedAtObject != hit.collider.gameObject)
             {
+                Debug.Log("Hit: " + hit.transform.gameObject.name);
                 // New GameObject.
                 if (_gazedAtObject != null)
                     _gazedAtObject.SendMessage("OnPointerExit");

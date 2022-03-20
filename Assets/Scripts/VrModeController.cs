@@ -74,10 +74,10 @@ public class VrModeController : MonoBehaviour
         // This is only required if the XR plugin is initialized on startup,
         // otherwise these API calls can be removed and just be used when the XR
         // plugin is started.
-        if (!Google.XR.Cardboard.Api.HasDeviceParams())
-        {
-            Google.XR.Cardboard.Api.ScanDeviceParams();
-        }
+        // if (!Google.XR.Cardboard.Api.HasDeviceParams())
+        // {
+        //     Google.XR.Cardboard.Api.ScanDeviceParams();
+        // }
     }
 
     /// <summary>
@@ -87,24 +87,24 @@ public class VrModeController : MonoBehaviour
     {
         if (_isVrModeEnabled)
         {
-            if (Google.XR.Cardboard.Api.IsCloseButtonPressed)
-            {
-                if (xrKeyControl)
-                {
-                    ExitVR();
-                }
-                else
-                {
-                    Manager.Instance.LoadPreviousScene();
-                }
-            }
-
-            if (Google.XR.Cardboard.Api.IsGearButtonPressed)
-            {
-                Google.XR.Cardboard.Api.ScanDeviceParams();
-            }
-
-            Google.XR.Cardboard.Api.UpdateScreenParams();
+            // if (Google.XR.Cardboard.Api.IsCloseButtonPressed)
+            // {
+            //     if (xrKeyControl)
+            //     {
+            //         ExitVR();
+            //     }
+            //     else
+            //     {
+            //         Manager.Instance.LoadPreviousScene();
+            //     }
+            // }
+            //
+            // if (Google.XR.Cardboard.Api.IsGearButtonPressed)
+            // {
+            //     Google.XR.Cardboard.Api.ScanDeviceParams();
+            // }
+            //
+            // Google.XR.Cardboard.Api.UpdateScreenParams();
         }
         else
         {
@@ -122,10 +122,10 @@ public class VrModeController : MonoBehaviour
     public void EnterVR()
     {
         StartCoroutine(StartXR());
-        if (Google.XR.Cardboard.Api.HasNewDeviceParams())
-        {
-            Google.XR.Cardboard.Api.ReloadDeviceParams();
-        }
+        // if (Google.XR.Cardboard.Api.HasNewDeviceParams())
+        // {
+        //     Google.XR.Cardboard.Api.ReloadDeviceParams();
+        // }
     }
 
     /// <summary>

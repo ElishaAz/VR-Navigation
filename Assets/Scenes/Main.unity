@@ -363,11 +363,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1157834578259240826, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_TrackingType
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 1157834578263827330, guid: 8f2d984a9de2011409f3528ee9dca040,
         type: 3}
       propertyPath: m_Name
@@ -426,44 +421,6 @@ PrefabInstance:
     - target: {fileID: 1157834578263827331, guid: 8f2d984a9de2011409f3528ee9dca040,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1571695713996642653, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_SizeDelta.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 1571695713996642653, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_LocalPosition.z
-      value: 0.9
-      objectReference: {fileID: 0}
-    - target: {fileID: 2369547672058702525, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_text
-      value: 'Sample text
-
-        a
-
-        b
-
-        c
-
-        d'
-      objectReference: {fileID: 0}
-    - target: {fileID: 2369547672058702525, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_fontSize
-      value: 1.7
-      objectReference: {fileID: 0}
-    - target: {fileID: 2369547672058702525, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_fontSizeMax
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 2369547672058702525, guid: 8f2d984a9de2011409f3528ee9dca040,
-        type: 3}
-      propertyPath: m_enableWordWrapping
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

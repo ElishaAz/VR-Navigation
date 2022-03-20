@@ -1,16 +1,19 @@
-using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.UI;
 using VRNavigation.MapData;
 
-public class MapPicker : MonoBehaviour
+public class MapPickerObject : MonoBehaviour
 {
     [SerializeField] private MapButton buttonPrefab;
-    [SerializeField] private LayoutGroup buttonGroup;
-
     [SerializeField] private GameObject noMapsText;
+
+    [SerializeField] private Vector3 startPoint;
+    [SerializeField] private Vector2 spacing;
+    [SerializeField] private int rows = 5;
+
+    private int currentRow, currentColumn;
 
     private void Start()
     {
@@ -30,8 +33,18 @@ public class MapPicker : MonoBehaviour
 
     private void CreateButton(MapInfo info)
     {
+        currentRow++;
+        if (currentRow >= rows)
+        {
+            currentRow = 0;
+            currentColumn++;
+        }
+
         noMapsText.SetActive(false);
-        var button = Instantiate(buttonPrefab, buttonGroup.transform, true);
+        var position = startPoint +
+                       Vector3.right * currentRow * spacing.x +
+                       Vector3.down * currentColumn * spacing.y;
+        var button = Instantiate(buttonPrefab, position, Quaternion.identity);
         button.SetUp(info, OnClick(info));
         Debug.Log("Added button");
     }

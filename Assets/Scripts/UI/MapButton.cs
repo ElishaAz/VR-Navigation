@@ -10,8 +10,9 @@ public class MapButton : MonoBehaviour
     [SerializeField] private string mapName;
     [SerializeField] private float version;
 
-    [SerializeField] private Button button;
     [SerializeField] private TMPro.TMP_Text textField;
+
+    private UnityAction onButtonClick;
 
     public void SetUp(MapInfo info, UnityAction onButtonClick)
     {
@@ -19,8 +20,13 @@ public class MapButton : MonoBehaviour
         this.info = info;
         mapName = info.name;
         version = info.version;
-        button.onClick.AddListener(onButtonClick);
+        this.onButtonClick = onButtonClick;
 
         textField.text = $"{mapName}\nv{version}";
+    }
+
+    public void Click()
+    {
+        onButtonClick?.Invoke();
     }
 }
